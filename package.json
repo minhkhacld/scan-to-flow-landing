@@ -1,0 +1,22 @@
+{
+  "name": "scan-to-flow-landing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing page, Privacy Policy and Terms of Use for the Scan to Flow app.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:html": "node scripts/build.mjs",
+    "build:css": "tailwindcss -i src/styles.css -o dist/assets/styles.css --minify",
+    "build": "npm run build:html && npm run build:css",
+    "dev": "npm run build && node scripts/serve.mjs",
+    "watch:css": "tailwindcss -i src/styles.css -o dist/assets/styles.css --watch",
+    "check": "node scripts/check-links.mjs"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "tailwindcss": "4.3.3"
+  }
+}

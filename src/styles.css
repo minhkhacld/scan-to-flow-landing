@@ -1,0 +1,232 @@
+@import "tailwindcss" source(none);
+@import "./fonts.css";
+
+/* Tailwind scans these for class names. Pages are rendered from the .mjs templates. */
+@source "./**/*.mjs";
+@source "../public/assets/*.js";
+
+@theme {
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Brand tokens, from the Scan to Flow design canvas */
+  --color-ink-950: #070a09;
+  --color-ink-900: #0b0f0e;
+  --color-ink: #101816;
+  --color-ink-800: #161b1a;
+  --color-ink-700: #202625;
+  --color-ink-600: #272e2c;
+  --color-mist: #f3f6f5;
+  --color-mist-2: #a9b4b0;
+  --color-mist-3: #8e9995;
+  --color-paper: #f4f6f5;
+  --color-fill: #e9edeb;
+  --color-label-2: #56625e;
+  --color-teal: #0a7c6e;
+  --color-teal-deep: #075e54;
+  --color-teal-bright: #2dd4bf;
+  --color-teal-soft: #a7f3e4;
+  --color-teal-wash: #e3f5f1;
+  --color-teal-night: #0e3a33;
+  --color-amber: #ffc766;
+  --color-coral: #ff8a80;
+
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --animate-beam: beam 6s linear infinite;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-blink: blink 1.1s steps(1) infinite;
+  --animate-packet: packet 3.2s var(--ease-sheet) infinite;
+  --animate-screen-scan: screen-scan 3.6s ease-in-out infinite;
+
+  @keyframes beam {
+    0% { transform: translateY(-10vh); opacity: 0; }
+    8% { opacity: 1; }
+    92% { opacity: 1; }
+    100% { transform: translateY(110vh); opacity: 0; }
+  }
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  @keyframes packet {
+    0% { left: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+  @keyframes screen-scan {
+    0%, 100% { top: 38%; }
+    50% { top: 56%; }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+  body {
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: var(--color-teal-bright);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-teal-bright);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  [id] { scroll-margin-top: 6rem; }
+}
+
+@layer components {
+  /* A barcode-like strip, the "send meter" motif of the app. */
+  .barcode {
+    background-image: repeating-linear-gradient(
+      90deg,
+      currentColor 0 2px, transparent 2px 5px,
+      currentColor 5px 6px, transparent 6px 8px,
+      currentColor 8px 11px, transparent 11px 13px,
+      currentColor 13px 14px, transparent 14px 18px,
+      currentColor 18px 20px, transparent 20px 22px
+    );
+  }
+
+  /* Faint terminal grid behind dark sections. */
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* Viewfinder corners, drawn like the logo mark. */
+  .viewfinder {
+    --c: var(--color-teal-bright);
+    --l: 22px;
+    --w: 3px;
+    background:
+      linear-gradient(var(--c), var(--c)) top left / var(--l) var(--w),
+      linear-gradient(var(--c), var(--c)) top left / var(--w) var(--l),
+      linear-gradient(var(--c), var(--c)) top right / var(--l) var(--w),
+      linear-gradient(var(--c), var(--c)) top right / var(--w) var(--l),
+      linear-gradient(var(--c), var(--c)) bottom left / var(--l) var(--w),
+      linear-gradient(var(--c), var(--c)) bottom left / var(--w) var(--l),
+      linear-gradient(var(--c), var(--c)) bottom right / var(--l) var(--w),
+      linear-gradient(var(--c), var(--c)) bottom right / var(--w) var(--l);
+    background-repeat: no-repeat;
+  }
+
+  /* Phone frame around real app captures (the captures include the status bar). */
+  .phone {
+    position: relative;
+    border-radius: 2.75rem;
+    padding: 0.6rem;
+    background: linear-gradient(160deg, #2a3230, #0b0f0e 60%);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.08),
+      0 40px 80px -30px rgb(0 0 0 / 0.8),
+      0 0 0 1px rgb(0 0 0 / 0.6);
+  }
+  .phone > img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 2.2rem;
+  }
+  .phone-sm { border-radius: 2rem; padding: 0.4rem; }
+  .phone-sm > img { border-radius: 1.65rem; }
+
+  /* Scroll reveal. Only hidden when JS is running (html.js). */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.7s var(--ease-sheet), transform 0.7s var(--ease-sheet);
+    transition-delay: var(--d, 0ms);
+  }
+  .js [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hero terminal states, set by main.js through data-state. */
+  [data-state="sending"] .status-dot { background: var(--color-amber); }
+  [data-state="sent"] .status-dot { background: var(--color-teal-bright); box-shadow: 0 0 0 4px rgb(45 212 191 / 0.18); }
+  [data-state="sending"] .status-sent,
+  [data-state="sent"] .status-sending { display: none; }
+  .flash { animation: flash 0.6s ease-out; }
+  @keyframes flash {
+    0% { box-shadow: 0 0 0 0 rgb(45 212 191 / 0.55); }
+    100% { box-shadow: 0 0 0 18px rgb(45 212 191 / 0); }
+  }
+
+  /* FAQ disclosure marker */
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary .plus { transition: transform 0.25s var(--ease-sheet); }
+  .faq[open] summary .plus { transform: rotate(45deg); }
+
+  /* Legal documents */
+  .legal h2 {
+    margin-top: 3rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.375rem;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--color-ink);
+  }
+  .legal h3 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .legal p, .legal li { line-height: 1.75; }
+  .legal p + p,
+  .legal ul + p,
+  .legal ol + p,
+  .legal div + p,
+  .legal h3 + div { margin-top: 0.9rem; }
+  .legal ul { margin-top: 0.75rem; padding-left: 1.25rem; list-style: disc; }
+  .legal ol { margin-top: 0.75rem; padding-left: 1.25rem; list-style: decimal; }
+  .legal li + li { margin-top: 0.4rem; }
+  .legal li::marker { color: var(--color-teal); }
+  .legal a {
+    color: var(--color-teal);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+  }
+  .legal a:hover { color: var(--color-teal-deep); }
+  .legal strong { font-weight: 600; color: var(--color-ink); }
+  .legal table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+  .legal th, .legal td { text-align: left; vertical-align: top; padding: 0.75rem 0.75rem 0.75rem 0; border-bottom: 1px solid rgb(16 24 22 / 0.1); }
+  .legal th { font-weight: 600; color: var(--color-ink); white-space: nowrap; }
+
+  @media (prefers-color-scheme: dark) {
+    .legal h2, .legal h3, .legal strong, .legal th { color: var(--color-mist); }
+    .legal a { color: var(--color-teal-bright); }
+    .legal a:hover { color: var(--color-teal-soft); }
+    .legal li::marker { color: var(--color-teal-bright); }
+    .legal th, .legal td { border-color: rgb(255 255 255 / 0.1); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .motion-hide { display: none !important; }
+}
